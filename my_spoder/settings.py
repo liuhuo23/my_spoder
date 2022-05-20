@@ -18,7 +18,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 LOG_LEVEL = "INFO"
-# LOG_FILE = "./log.txt"
+# LOG_FILE = "./log/log.txt"
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
 

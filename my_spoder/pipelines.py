@@ -23,7 +23,7 @@ class MyDouPipeline:
     def open_spider(self, spider):
         logger.info("开始执行")
         if spider.name == 'douban':
-            self.file = open('douban.json', 'w', encoding='utf-8')
+            self.file = open('./data/douban.json', 'w', encoding='utf-8')
 
     def process_item(self, item, spider):
         if spider.name == 'douban':
