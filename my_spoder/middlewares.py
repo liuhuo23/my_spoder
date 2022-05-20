@@ -2,9 +2,9 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
+import random
 from scrapy import signals
-
+from scrapy.utils.project import get_project_settings
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
@@ -101,3 +101,22 @@ class MySpoderDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+# 代理
+class TestProxyMiddleware(object):
+    def __init__(self):
+        self.setting = get_project_settings()
+
+    def process_request(self, request, spider):
+        proxy = random.choice(self.setting['PROXIES'])
+        request.meta['proxy'] = proxy
+
+
+# UA
+class UAMiddleware(object):
+    def __init__(self):
+        self.settings = get_project_settings()
+    def process_request(self, request, spider):
+        ua = random.choice(self.settings['USER_AGENT_LIST'])
+        request.headers['User-Agent'] = ua

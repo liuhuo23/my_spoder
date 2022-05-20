@@ -12,6 +12,6 @@ class BookItem(scrapy.Item):
     author = scrapy.Field()  # 作者
     rate = scrapy.Field()  # 评分
     press_year = scrapy.Field()  # 出版年
-    comment = scrapy.Field()  # 评论
+    comment = scrapy.Field()  # 评论 字典
     press = scrapy.Field()  # 出版社
     translator = scrapy.Field()  # 译者
