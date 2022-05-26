@@ -2,11 +2,17 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
 import random
+import time
+
 from scrapy import signals
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.http import HtmlResponse
 from scrapy.utils.project import get_project_settings
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
+from scrapy.utils.response import response_status_message
 
 
 class MySpoderSpiderMiddleware:
@@ -117,6 +123,57 @@ class TestProxyMiddleware(object):
 class UAMiddleware(object):
     def __init__(self):
         self.settings = get_project_settings()
+
     def process_request(self, request, spider):
         ua = random.choice(self.settings['USER_AGENT_LIST'])
         request.headers['User-Agent'] = ua
+
+
+# 超时重测
+class TiemoutMIddleware(RetryMiddleware):
+    logger = logging.getLogger(__name__)
+
+    def process_response(self, request, response, spider):
+        if response.status != 200:
+            print('状态码异常')
+            reason = response_status_message(response.status)
+            return self._retry(request, reason, spider) or response
+        return response
+
+    def process_exception(self, request, exception, spider):
+        print(exception)
+
+
+class WangyiproDownloaderMiddleware(object):
+
+    # 可以拦截到request请求
+    def process_request(self, request, spider):
+        # 在进行url访问之前可以进行的操作, 更换UA请求头, 使用其他代理等
+        pass
+
+    # 可以拦截到response响应对象(拦截下载器传递给Spider的响应对象)
+    def process_response(self, request, response, spider):
+        """
+        三个参数:
+        # request: 响应对象所对应的请求对象
+        # response: 拦截到的响应对象
+        # spider: 爬虫文件中对应的爬虫类 WangyiSpider 的实例对象, 可以通过这个参数拿到 WangyiSpider 中的一些属性或方法
+        """
+
+        #  对页面响应体数据的篡改, 如果是每个模块的 url 请求, 则处理完数据并进行封装
+        if request.url:
+            spider.browser.get(url=request.url)
+            js = "window.scrollTo(0,document.body.scrollHeight)"
+            spider.browser.execute_script(js)
+            # if more_btn and request.url == "http://news.163.com/domestic/":
+            #     more_btn.click()
+            time.sleep(1)  # 等待加载,  可以用显示等待来优化.
+            row_response = spider.browser.page_source
+            return HtmlResponse(url=spider.browser.current_url, body=row_response, encoding="utf8",
+                                request=request)  # 参数url指当前浏览器访问的url(通过current_url方法获取), 在这里参数url也可以用request.url
+            # 参数body指要封装成符合HTTP协议的源数据, 后两个参数可有可无
+        else:
+            return response  # 是原来的主页的响应对象
+
+
+# 其他方法无需动

@@ -7,7 +7,10 @@
 # useful for handling different item types with a single interface
 import json
 import logging
+
+import gridfs
 import pymongo
+import requests
 
 from itemadapter import ItemAdapter
 
@@ -58,6 +61,27 @@ class DouMongo:
             item_dict = dict(item)
             self.book.insert_one(item_dict)
         return item
+
+    def close_spider(self, spider):
+        pass
+
+
+class ImageDownload:
+    db = None
+    def open_spider(self, spider):
+        if spider.name == 'movie':
+            client = pymongo.MongoClient('localhost', connect=False)
+            self.db = client['movie']
+        pass
+
+    def process_item(self, item, spider):
+        if spider.name == 'movie':
+            img_url = item['img_url']
+            result = requests.get(img_url)
+            fs = gridfs.GridFS(self.db, 'img')
+            id = fs.put(result.content)
+            item['img_url'] = id
+        pass
 
     def close_spider(self, spider):
         pass

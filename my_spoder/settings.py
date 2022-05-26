@@ -26,7 +26,7 @@ USER_AGENT_LIST = [
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "ERROR"
 # LOG_FILE = "./log/log.txt"
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -60,11 +60,13 @@ DEFAULT_REQUEST_HEADERS = {
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   # 'my_spoder.middlewares.MySpoderDownloaderMiddleware': 543,
-    'my_spoder.middlewares.TestProxyMiddleware': 300,
-    'my_spoder.middlewares.UAMiddleware':301,
+    # 'my_spoder.middlewares.MySpoderDownloaderMiddleware': 543,
+    #  'my_spoder.middlewares.TestProxyMiddleware': 300,
+    'my_spoder.middlewares.WangyiproDownloaderMiddleware': 303,
+    'my_spoder.middlewares.UAMiddleware': 301,
+    'my_spoder.middlewares.TiemoutMIddleware': 302,
 }
-
+RETRY_TIMES = 10  # 最大超时
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
