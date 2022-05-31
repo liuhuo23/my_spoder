@@ -159,7 +159,8 @@ class WangyiproDownloaderMiddleware(object):
         # response: 拦截到的响应对象
         # spider: 爬虫文件中对应的爬虫类 WangyiSpider 的实例对象, 可以通过这个参数拿到 WangyiSpider 中的一些属性或方法
         """
-
+        if spider.name == 'jingdong':
+            browser = spider.browser
         #  对页面响应体数据的篡改, 如果是每个模块的 url 请求, 则处理完数据并进行封装
         if request.url:
             spider.browser.get(url=request.url)
